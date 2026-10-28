@@ -5,42 +5,74 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SOTD Index</title>
 <meta name="description" content="Every Awwwards Site of the Day since 2009, with filters you can actually combine: category, tag, technology, country, font, color, year and awards.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23141414'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23fff083'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<script>
+  // Apply the saved theme before the first paint, to avoid a flash.
+  try { const t = localStorage.getItem('sotd-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch {}
+</script>
 <style>
+  /* griffon noir look: a tight grotesk (Inter Tight, OFL), Piazzolla italic (OFL) for one word of a title,
+     clay / slate, light blue accent. Both fonts are self-hosted, see assets/fonts/OFL-*.txt. */
+  @font-face { font-family: "Inter Tight"; src: url("assets/fonts/InterTight-latin.woff2") format("woff2"); font-weight: 400 500; font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: "Inter Tight"; src: url("assets/fonts/InterTight-latin-ext.woff2") format("woff2"); font-weight: 400 500; font-display: swap;
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: "Piazzolla"; src: url("assets/fonts/Piazzolla-Italic.woff2") format("woff2"); font-style: italic; font-weight: 400; font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+FB01-FB02, U+FEFF, U+FFFD; }
+  @font-face { font-family: "Piazzolla"; src: url("assets/fonts/Piazzolla-Italic-ext.woff2") format("woff2"); font-style: italic; font-weight: 400; font-display: swap;
+    unicode-range: U+0100-0130, U+0132-0151, U+0154-024F, U+0259, U+02B0-02C5, U+02C7-02D9, U+02DB, U+02DD-02FF, U+0300-036F, U+2070-209F, U+20A0-20AB, U+20AD-20CF, U+2100-2121, U+2123-214F, U+2190-21FF, U+2215, U+2248, U+2260, U+2264-2265, U+25CA, U+FB00, U+FB03-FB06; }
+
   :root {
-    --bg: #f4f3f0;
+    color-scheme: light;
+    --bg: #f6f6f4;        /* clay */
     --panel: #ffffff;
-    --fg: #141414;
-    --muted: #6f6c66;
-    --line: #e3e1dc;
-    --chip: #ecebe7;
-    --accent: #141414;
-    --accent-fg: #ffffff;
-    --exclude: #b3261e;
-    --gold: #fff083;
-    --radius: 10px;
+    --fg: #252525;        /* slate */
+    --muted: #606263;
+    --line: #d2d2d2;
+    --chip: #e8e9e9;
+    --accent: #252525;
+    --accent-fg: #f6f6f4;
+    --blue: #a4d1f3;      /* light blue */
+    --on-blue: #252525;
+    --exclude: #c0392b;
+    --radius: 6px;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f0f0f;
-      --panel: #181818;
-      --fg: #f1f0ec;
-      --muted: #9a978f;
-      --line: #2a2a2a;
-      --chip: #232323;
-      --accent: #f1f0ec;
-      --accent-fg: #111111;
-      --exclude: #ff7a70;
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #252525;
+      --panel: #2c2d2e;
+      --fg: #f6f6f4;
+      --muted: #a4a5a6;
+      --line: #494b4d;
+      --chip: #333536;
+      --accent: #f6f6f4;
+      --accent-fg: #252525;
+      --exclude: #f0877c;
     }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #252525;
+    --panel: #2c2d2e;
+    --fg: #f6f6f4;
+    --muted: #a4a5a6;
+    --line: #494b4d;
+    --chip: #333536;
+    --accent: #f6f6f4;
+    --accent-fg: #252525;
+    --exclude: #f0877c;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     background: var(--bg);
     color: var(--fg);
-    font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font: 400 14px/1.45 "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+  em.gn { font-family: "Piazzolla", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.02em; word-spacing: .12em; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   button, input, select { font: inherit; color: inherit; }
   a { color: inherit; }
 
@@ -52,13 +84,18 @@
     background: var(--panel); border-right: 1px solid var(--line);
     padding: 20px 16px 40px;
   }
-  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-  .brand h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; flex: 1; }
-  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; font-size: 11px; }
-  .lang button { border: 0; background: none; padding: 3px 7px; cursor: pointer; color: var(--muted); }
-  .lang button.on { background: var(--accent); color: var(--accent-fg); }
+  .brand { margin-bottom: 18px; }
+  .brand h1 { font-size: 30px; font-weight: 400; line-height: 1; margin: 0; letter-spacing: -0.02em; }
+  .credit { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; color: var(--muted); font-size: 12px; text-decoration: none; }
+  .credit svg { height: 13px; width: 63px; color: var(--fg); position: relative; top: 1px; }
+  .credit:hover svg { color: var(--fg); opacity: .7; }
+  .prefs { display: flex; gap: 8px; margin-top: 14px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; font-size: 11px; }
+  .seg button { display: grid; place-items: center; border: 0; background: none; padding: 3px 8px; min-height: 24px; cursor: pointer; color: var(--muted); }
+  .seg button.on { background: var(--accent); color: var(--accent-fg); }
+  .seg svg { width: 13px; height: 13px; }
   .search {
-    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px;
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 4px;
     background: var(--bg); outline: none;
   }
   .search:focus { border-color: var(--fg); }
@@ -68,7 +105,7 @@
   .group-head { display: flex; align-items: center; gap: 8px; }
   .group-title {
     flex: 1; display: flex; align-items: center; gap: 6px; padding: 2px 0;
-    background: none; border: 0; cursor: pointer; text-align: left; font-weight: 600;
+    background: none; border: 0; cursor: pointer; text-align: left; font-weight: 500;
   }
   .group-title .n { font-weight: 500; font-size: 11px; background: var(--accent); color: var(--accent-fg); border-radius: 10px; padding: 0 6px; }
   .group-title::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
@@ -119,11 +156,12 @@
   /* Content */
   main { padding: 20px clamp(16px, 3vw, 36px) 60px; min-width: 0; }
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .total { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; }
-  .total span { color: var(--muted); font-weight: 400; font-size: 14px; }
+  .total { font-size: 34px; font-weight: 400; line-height: 1; letter-spacing: -0.03em; }
+  .total span { color: var(--muted); font-size: 14px; letter-spacing: 0; }
   .toolbar .spacer { flex: 1; }
-  select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
-  .open-filters { display: none; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); cursor: pointer; }
+  select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); }
+  .open-filters { display: none; padding: 7px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); cursor: pointer; }
+  .credit-mobile { display: none; }
 
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
   .chip {
@@ -143,12 +181,12 @@
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
   .thumb:hover img { transform: scale(1.03); }
   .score {
-    position: absolute; top: 10px; right: 10px; background: var(--gold); color: #111;
-    font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px;
+    position: absolute; top: 10px; right: 10px; background: var(--blue); color: var(--on-blue);
+    font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px;
   }
   .card-info { display: flex; gap: 10px; margin-top: 10px; align-items: flex-start; }
   .card-text { flex: 1; min-width: 0; }
-  .card h2 { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .card h2 { margin: 0; font-size: 15px; font-weight: 500; line-height: 1.3; }
   .card h2 a { text-decoration: none; }
   .card h2 a:hover { text-decoration: underline; }
   .meta { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -156,7 +194,7 @@
   .dots i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(128,128,128,.35); }
   .badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
   .badges span { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--chip); color: var(--muted); }
-  .badges .gold { background: var(--gold); color: #111; }
+  .badges .gold { background: var(--blue); color: var(--on-blue); }
 
   .empty { padding: 60px 0; color: var(--muted); text-align: center; }
   .sentinel { height: 1px; }
@@ -170,16 +208,27 @@
     body.filters-open aside { transform: none; }
     body.filters-open::after { content: ""; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 10; }
     .open-filters { display: inline-block; }
+    .credit-mobile { display: inline-flex; margin-top: 0; width: 100%; }
+    .total { font-size: 26px; }
     .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px 12px; }
   }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="gn-logo" viewBox="0 0 1701 351" fill="currentColor"><path d="M185.95,96.87h-77.75c-13.49,0-25.8,2.96-36.92,8.88c-11.13,5.92-20,13.85-26.62,23.79 c-6.63,9.94-9.94,20.95-9.94,33.01c0,15.62,5.38,28.28,16.15,37.99c7.55,6.81,16.71,11.21,27.46,13.25 c-2.31,1.8-4.31,3.94-5.98,6.46c-3.55,5.33-5.33,10.95-5.33,16.86c0,4.26,0.89,8.46,2.66,12.6c1.77,4.14,4.55,8.11,8.34,11.89 l56.09,17.39c5.68,7.57,7.16,14.97,4.44,22.19c-2.72,7.22-8.76,13.13-18.1,17.75c-9.35,4.62-20.89,6.92-34.61,6.92 c-15.15,0-27.57-2.55-37.27-7.63c-9.71-5.09-16.1-12.13-19.17-21.12c-3.08-9-2.13-19.05,2.84-30.18c-5.21,1.19-9.47,2.84-12.78,4.97 c-3.32,2.13-7.81,5.68-13.49,10.65c-2.6,11.12-1.12,21.18,4.44,30.17c5.56,8.99,14.43,16.15,26.62,21.48 c12.19,5.33,26.8,7.99,43.84,7.99c16.33,0,30.94-2.31,43.84-6.92c12.9-4.62,23.08-10.83,30.53-18.64 c7.45-7.81,11.18-16.68,11.18-26.62c0-17.52-11.71-29.7-35.15-36.56L86.9,240.29l0.29-25.4c1.88,0.12,3.79,0.2,5.75,0.2 c13.25,0,25.32-2.96,36.21-8.88c10.88-5.91,19.58-13.78,26.09-23.61c6.51-9.82,9.76-20.65,9.76-32.48c0-15.62-5.27-28.4-15.8-38.34 c-0.25-0.24-0.51-0.46-0.77-0.69l33.25,6.01L185.95,96.87z M138.02,149.59c-1.19,10.77-4.85,20.83-11,30.17 c-6.16,9.35-14.56,16.51-25.21,21.48c-4.03,0-8.76-0.59-14.2-1.77c-5.45-1.18-11.95-3.07-19.53-5.68 c-5.21-9.94-7.28-20.35-6.21-31.24c1.06-10.88,4.73-20.88,11-30c6.27-9.11,14.49-16.27,24.67-21.48c6.39,0.71,12.42,1.78,18.1,3.2 c5.68,1.42,11.12,2.96,16.33,4.61C137.19,128.59,139.21,138.82,138.02,149.59z"/> <path d="M336.82,94.74l-9.58,39.76l-20.94-6.39c-10.18,9.47-20.18,22.31-30,38.52c-7.92,13.08-15.96,28.89-24.11,47.43 l-11.21,56.06h-26.98l32.62-150.36c-3.99,0.17-7.83,0.46-11.49,0.9c-5.8,0.71-12.37,1.78-19.7,3.2c1.42-6.15,3.78-11.36,7.1-15.62 c3.31-4.26,7.22-7.51,11.72-9.76c4.49-2.25,9.11-3.37,13.84-3.37c5.2,0,10,1.54,14.38,4.61c4.38,3.08,7.75,7.69,10.12,13.85 l-17.4,70.29l1.34,0.5c6.9-14.41,13.62-27.08,20.14-37.95c11-18.34,21.48-31.77,31.42-40.29C318.01,97.58,327.59,93.8,336.82,94.74z "/> <path d="M425.57,43.97c-3.08,3.79-6.92,7.04-11.54,9.76c-4.62,2.72-9.41,4.44-14.38,5.15c-3.79-3.31-7.05-7.28-9.76-11.89 c-2.72-4.61-4.56-9.41-5.5-14.38c3.31-3.78,7.33-6.98,12.07-9.58c4.73-2.6,9.58-4.38,14.55-5.32c3.55,3.55,6.68,7.63,9.41,12.25 C423.14,34.57,424.86,39.24,425.57,43.97z M382.03,248.34l27.22-134.79c-2.37-6.15-5.68-10.77-9.94-13.85 c-4.26-3.07-9-4.61-14.2-4.61c-4.74,0-9.35,1.13-13.84,3.37c-4.5,2.25-8.4,5.5-11.71,9.76c-3.32,4.26-5.8,9.47-7.46,15.62 c5.91-1.65,11.77-2.78,17.57-3.37c3.96-0.4,8.53-0.67,13.65-0.79l-28.39,131.61c1.89,6.63,4.91,11.84,9.05,15.62 c4.14,3.78,9.05,5.68,14.73,5.68c4.73,0,9.41-1.3,14.02-3.91c4.61-2.6,8.7-6.15,12.25-10.65c3.55-4.49,6.15-9.82,7.81-15.97 c-5.92,2.13-12.07,3.73-18.46,4.79C390.37,247.52,386.26,248,382.03,248.34z"/> <path d="M602.36,114.26h-98.29L477.4,281.47c-1.9,12.07-5.62,22.78-11.18,32.13c-5.56,9.35-12.42,16.69-20.59,22.01 c-8.17,5.33-17.1,7.99-26.8,7.99c-5.91,0-11.36-1.19-16.33-3.55c-4.97-2.37-8.99-5.56-12.07-9.58c-3.07-4.03-4.73-8.4-4.97-13.13 c8.29,0,17.63,0.06,28.04,0.18c10.42,0.12,20.59-0.3,30.53-1.24c1.89-6.39,3.49-12.07,4.79-17.04c1.3-4.97,2.49-9.71,3.55-14.2 c1.06-4.5,1.95-9.47,2.66-14.91l24.28-155.84h-32.09l1.78-7.46c4.97-2.6,10.29-4.67,15.97-6.21c5.33-1.44,10.98-2.39,16.93-2.9 l5.44-34.9c1.42-9.23,4.73-17.45,9.94-24.67c5.2-7.22,11.77-12.84,19.7-16.86c7.93-4.02,16.62-6.04,26.09-6.04 c6.39,0,12.12,1.06,17.22,3.2c5.09,2.13,9.17,5.21,12.25,9.23c3.07,4.03,4.73,8.52,4.97,13.49c-21.3-0.71-41.66-0.23-61.06,1.42 c-1.9,4.74-3.37,9.23-4.44,13.49c-1.07,4.26-1.95,9.65-2.66,16.15c-0.68,6.24-1.58,14.7-2.69,25.38h98.9L602.36,114.26z"/> <path d="M618.69,72.73c-0.68,6.56-1.58,14.85-2.68,24.85h52.74 l-3.2,16.69h-52.13l-22.06,138.45c-4.97,31.24-12.49,54.19-22.54,68.87c-10.06,14.67-23.73,22.01-41,22.01 c-5.91,0-11.36-1.13-16.33-3.37c-4.97-2.25-8.93-5.45-11.89-9.58c-2.96-4.14-4.55-8.58-4.79-13.31c10.89,0,21.18-0.12,30.88-0.35 c9.71-0.24,19.76-0.59,30.17-1.07c1.65-7.58,3.13-14.38,4.44-20.41c1.3-6.04,2.49-12.25,3.55-18.64c1.06-6.39,2.19-13.96,3.37-22.72 l21.58-139.87h-32.23l1.78-7.46c4.97-2.6,10.29-4.67,15.97-6.21c5.36-1.45,11.04-2.41,17.03-2.91l6.75-43.77 c1.42-9.23,4.73-17.45,9.94-24.67c5.2-7.22,11.77-12.9,19.7-17.04c7.93-4.14,16.62-6.21,26.09-6.21c6.39,0,12.12,1.13,17.22,3.37 c5.09,2.25,9.17,5.39,12.25,9.41c3.07,4.03,4.73,8.52,4.97,13.49c-21.3-0.71-41.66-0.23-61.06,1.42c-1.66,3.55-2.9,6.98-3.73,10.3 c-0.83,3.32-1.66,7.22-2.49,11.71C620.17,60.19,619.4,65.87,618.69,72.73z"/> <path d="M747.91,275.43c-56.8,0-91.23-39.41-91.23-95.85c0-56.44,34.43-95.85,91.23-95.85c56.8,0,91.23,39.41,91.23,95.85 C839.14,236.03,804.71,275.43,747.91,275.43z M747.91,244.9c35.5,0,53.96-28.04,53.96-65.32c0-37.63-18.46-65.32-53.96-65.32 c-35.5,0-53.96,27.69-53.96,65.32C693.95,216.86,712.41,244.9,747.91,244.9z"/> <path d="M1023.03,144.8v125.31H985.4V155.45c0-24.49-10.29-40.11-35.86-40.11c-28.75,0-47.21,17.39-47.21,44.38v110.4h-37.27 V88.71h37.27v23.43h0.71c9.58-14.2,28.4-28.4,59.64-28.4C996.41,83.74,1023.03,103.26,1023.03,144.8z"/> <path d="M1282.53,144.8v125.31h-37.63V155.45 c0-24.49-10.29-40.11-35.85-40.11c-28.75,0-47.21,17.39-47.21,44.38v110.4h-37.27V88.71h37.27v23.43h0.71 c9.58-14.2,28.4-28.4,59.64-28.4C1255.9,83.74,1282.53,103.26,1282.53,144.8z"/> <path d="M1398.25,275.43c-56.8,0-91.23-39.41-91.23-95.85 c0-56.44,34.43-95.85,91.23-95.85c56.8,0,91.23,39.41,91.23,95.85C1489.49,236.03,1455.05,275.43,1398.25,275.43z M1398.25,244.9 c35.5,0,53.96-28.04,53.96-65.32c0-37.63-18.46-65.32-53.96-65.32c-35.5,0-53.96,27.69-53.96,65.32 C1344.29,216.86,1362.75,244.9,1398.25,244.9z"/> <path d="M1515.4,38.3c0-12.78,10.65-19.52,20.94-19.52 c11,0,21.3,6.74,21.3,19.52c0,12.78-10.29,19.88-21.3,19.88C1526.05,58.18,1515.4,51.08,1515.4,38.3z M1555.16,88.71v181.4h-37.28 V88.71H1555.16z"/> <path d="M1695.74,85.51v35.14h-0.71c-35.85-6.04-64.61,18.1-64.61,56.8 v92.65h-37.27V88.71h37.27v34.08h0.71c9.58-22.72,24.5-38.34,48.28-38.34C1685.8,84.45,1690.41,84.8,1695.74,85.51z"/></symbol></svg>
 <div class="app">
   <aside id="sidebar">
     <div class="brand">
-      <h1>SOTD Index</h1>
-      <span class="lang" id="lang"><button data-lang="en">EN</button><button data-lang="fr">FR</button></span>
+      <h1>SOTD <em class="gn">Index</em></h1>
+      <a class="credit" href="https://griffonnoir.com/" target="_blank" rel="noopener"><span class="made-by">Made by</span><svg viewBox="0 0 1701 351" role="img" aria-label="griffon noir"><use href="#gn-logo"/></svg></a>
+      <div class="prefs">
+        <span class="seg" id="lang"><button data-lang="en">EN</button><button data-lang="fr">FR</button></span>
+        <span class="seg" id="theme">
+          <button data-theme-set="auto"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg></button>
+          <button data-theme-set="light"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3 3l1 1M12 12l1 1M3 13l1-1M12 4l1-1"/></svg></button>
+          <button data-theme-set="dark"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 10.2A6 6 0 0 1 5.8 2.5a6 6 0 1 0 7.7 7.7z"/></svg></button>
+        </span>
+      </div>
     </div>
     <input class="search" id="q" type="search" autocomplete="off">
     <div id="groups"></div>
@@ -189,6 +238,7 @@
 
   <main>
     <div class="toolbar">
+      <a class="credit credit-mobile" href="https://griffonnoir.com/" target="_blank" rel="noopener"><span class="made-by">Made by</span><svg viewBox="0 0 1701 351" role="img" aria-label="griffon noir"><use href="#gn-logo"/></svg></a>
       <button class="open-filters" id="openFilters"></button>
       <div class="total" id="total"></div>
       <div class="spacer"></div>
@@ -207,12 +257,14 @@
   const I18N = {
     en: {
       search: 'Search a title, an author, a word…',
+      madeBy: 'Made by',
+      theme: { auto: 'Theme: system', light: 'Theme: light', dark: 'Theme: dark' },
       filters: 'Filters',
       of: 'of',
       sotd: 'SOTDs',
       empty: 'No Site of the Day matches these filters.',
       noData: 'No data yet: run <code>node scripts/scrape.mjs</code> in this folder.',
-      sort: { new: 'Newest', old: 'Oldest', score: 'Highest score', title: 'Title A→Z' },
+      sort: { new: 'Newest', old: 'Oldest' },
       groups: { award: 'Awards', year: 'Year', cat: 'Category', tag: 'Tag', tech: 'Technology', country: 'Country', font: 'Font', color: 'Color' },
       and: 'AND', or: 'OR',
       andTip: 'Sites must have every checked value', orTip: 'Sites must have at least one checked value',
@@ -231,12 +283,14 @@
     },
     fr: {
       search: 'Rechercher un titre, un auteur, un mot…',
+      madeBy: 'Conçu par',
+      theme: { auto: 'Thème : système', light: 'Thème : clair', dark: 'Thème : sombre' },
       filters: 'Filtres',
       of: 'sur',
       sotd: 'SOTD',
       empty: 'Aucun SOTD ne correspond à ces filtres.',
       noData: 'Pas encore de données : lance <code>node scripts/scrape.mjs</code> dans ce dossier.',
-      sort: { new: 'Plus récents', old: 'Plus anciens', score: 'Meilleure note', title: 'Titre A→Z' },
+      sort: { new: 'Plus récents', old: 'Plus anciens' },
       groups: { award: 'Distinctions', year: 'Année', cat: 'Catégorie', tag: 'Tag', tech: 'Technologie', country: 'Pays', font: 'Police', color: 'Couleur' },
       and: 'ET', or: 'OU',
       andTip: 'Le site doit avoir toutes les valeurs cochées', orTip: 'Le site doit avoir au moins une valeur cochée',
@@ -259,6 +313,8 @@
   const SHOW = 10;
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  // Scraped links are only trusted when they are plain http(s) URLs.
+  const safeUrl = (u) => (/^https?:\/\//i.test(u ?? '') ? u : null);
   const store = {
     get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
     set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
@@ -310,7 +366,7 @@
     st.inc = new Set(p.getAll('f'));
     st.exc = new Set(p.getAll('x'));
     st.q = p.get('q') ?? '';
-    st.sort = p.get('sort') ?? 'new';
+    st.sort = p.get('sort') === 'old' ? 'old' : 'new';
     for (const g of groups) st.mode[g.key] = g.mode;
     for (const m of p.getAll('m')) {
       const [k, v] = m.split(':');
@@ -352,13 +408,9 @@
 
   function compute() {
     results = sites.filter((s) => matches(s));
-    const by = {
-      new: (a, b) => (b.d ?? '').localeCompare(a.d ?? ''),
-      old: (a, b) => (a.d ?? '9').localeCompare(b.d ?? '9'),
-      score: (a, b) => (b.sc ?? -1) - (a.sc ?? -1) || (b.d ?? '').localeCompare(a.d ?? ''),
-      title: (a, b) => a.t.localeCompare(b.t, locale(), { sensitivity: 'base' }),
-    }[st.sort] ?? ((a, b) => (b.d ?? '').localeCompare(a.d ?? ''));
-    results.sort(by);
+    results.sort(st.sort === 'old'
+      ? (a, b) => (a.d ?? '9').localeCompare(b.d ?? '9')
+      : (a, b) => (b.d ?? '').localeCompare(a.d ?? ''));
   }
 
   // How many sites you would get by adding each value.
@@ -441,13 +493,13 @@
     const awards = s.f.filter((id) => id.startsWith('award:')).map((id) => `<span class="${/month|year/.test(id) ? 'gold' : ''}">${esc(labelOf.get(id))}</span>`).join('');
     const country = s.f.filter((id) => id.startsWith('country:')).map((id) => labelOf.get(id)).join(', ');
     return `<article class="card">
-      <a class="thumb" href="${esc(s.u || `https://www.awwwards.com/sites/${s.s}`)}" target="_blank" rel="noopener" title="${esc(s.desc || T.openSite)}">
-        ${s.i ? `<img loading="lazy" src="${esc(s.i)}" alt="">` : ''}
+      <a class="thumb" href="${esc(safeUrl(s.u) || `https://www.awwwards.com/sites/${encodeURIComponent(s.s)}`)}" target="_blank" rel="noopener" title="${esc(s.desc || T.openSite)}">
+        ${safeUrl(s.i) ? `<img loading="lazy" src="${esc(s.i)}" alt="">` : ''}
         ${s.sc ? `<span class="score">${s.sc.toFixed(2)}</span>` : ''}
       </a>
       <div class="card-info">
         <div class="card-text">
-          <h2><a href="https://www.awwwards.com/sites/${esc(s.s)}" target="_blank" rel="noopener" title="${esc(T.openPage)}">${esc(s.t)}</a></h2>
+          <h2><a href="https://www.awwwards.com/sites/${esc(encodeURIComponent(s.s))}" target="_blank" rel="noopener" title="${esc(T.openPage)}">${esc(s.t)}</a></h2>
           <div class="meta">${esc(fmtDate(s.d))}${s.a ? ' · ' + esc(s.a) : ''}${country ? ' · ' + esc(country) : ''}</div>
         </div>
         ${s.c?.length ? `<div class="dots">${s.c.slice(0, 5).map((h) => `<i style="background:${esc(h)}"></i>`).join('')}</div>` : ''}
@@ -487,6 +539,13 @@
     $('sort').value = st.sort;
     $('sort').setAttribute('aria-label', 'Sort');
     for (const b of $('lang').querySelectorAll('button')) b.classList.toggle('on', b.dataset.lang === lang);
+    for (const el of document.querySelectorAll('.made-by')) el.textContent = T.madeBy;
+    const theme = document.documentElement.dataset.theme || 'auto';
+    for (const b of $('theme').querySelectorAll('button')) {
+      b.classList.toggle('on', b.dataset.themeSet === theme);
+      b.title = T.theme[b.dataset.themeSet];
+      b.setAttribute('aria-label', T.theme[b.dataset.themeSet]);
+    }
   }
 
   // Interactions
@@ -539,6 +598,14 @@
     store.set('sotd-lang', l);
     renderStatic();
     render();
+  });
+  $('theme').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-theme-set]')?.dataset.themeSet;
+    if (!t) return;
+    if (t === 'auto') delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = t;
+    store.set('sotd-theme', t);
+    renderStatic();
   });
   let qTimer;
   $('q').addEventListener('input', (e) => {

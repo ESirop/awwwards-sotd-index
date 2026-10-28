@@ -16,7 +16,7 @@ and puts them in a single page where they can be crossed freely: *Music & Sound 
   technology, country, font and color.
 - **AND / OR** per group, and **exclusion** of any value (✕ on hover).
 - Live counts next to each value: how many sites remain if you add it.
-- Full-text search on title, author and description. Sort by date, score or title.
+- Full-text search on title, author and description. Newest or oldest first.
 - The URL keeps your filters, so a search can be bookmarked or shared.
 - English and French interface. Works on mobile.
 
@@ -69,6 +69,10 @@ commits `data/`, then deploys the page to GitHub Pages. On the 1st of each month
 
 Unofficial project, not affiliated with Awwwards. The data, scores and thumbnails belong to Awwwards and to the
 authors of each website; thumbnails are loaded from Awwwards' servers. The code is under the [MIT license](LICENSE).
+Fonts: [Inter Tight](https://fonts.google.com/specimen/Inter+Tight) and [Piazzolla](https://fonts.google.com/specimen/Piazzolla),
+both under the SIL Open Font License (see `assets/fonts/`).
+
+Made by [griffon noir](https://griffonnoir.com/).
 
 ---
 
