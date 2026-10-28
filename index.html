@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOTD Index</title>
+<meta name="description" content="Every Awwwards Site of the Day since 2009, with filters you can actually combine: category, tag, technology, country, font, color, year and awards.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23141414'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23fff083'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f4f3f0;
+    --panel: #ffffff;
+    --fg: #141414;
+    --muted: #6f6c66;
+    --line: #e3e1dc;
+    --chip: #ecebe7;
+    --accent: #141414;
+    --accent-fg: #ffffff;
+    --exclude: #b3261e;
+    --gold: #fff083;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f0f0f;
+      --panel: #181818;
+      --fg: #f1f0ec;
+      --muted: #9a978f;
+      --line: #2a2a2a;
+      --chip: #232323;
+      --accent: #f1f0ec;
+      --accent-fg: #111111;
+      --exclude: #ff7a70;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  a { color: inherit; }
+
+  .app { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  aside {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--line);
+    padding: 20px 16px 40px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .brand h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; flex: 1; }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; font-size: 11px; }
+  .lang button { border: 0; background: none; padding: 3px 7px; cursor: pointer; color: var(--muted); }
+  .lang button.on { background: var(--accent); color: var(--accent-fg); }
+  .search {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg); outline: none;
+  }
+  .search:focus { border-color: var(--fg); }
+
+  .group { border-top: 1px solid var(--line); padding: 12px 0; }
+  .group:first-of-type { margin-top: 16px; }
+  .group-head { display: flex; align-items: center; gap: 8px; }
+  .group-title {
+    flex: 1; display: flex; align-items: center; gap: 6px; padding: 2px 0;
+    background: none; border: 0; cursor: pointer; text-align: left; font-weight: 600;
+  }
+  .group-title .n { font-weight: 500; font-size: 11px; background: var(--accent); color: var(--accent-fg); border-radius: 10px; padding: 0 6px; }
+  .group-title::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
+  .group.open .group-title::after { content: "−"; }
+  .mode { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; font-size: 10px; }
+  .mode button { border: 0; background: none; padding: 2px 6px; cursor: pointer; color: var(--muted); }
+  .mode button.on { background: var(--accent); color: var(--accent-fg); }
+  .group-body { display: none; margin-top: 8px; }
+  .group.open .group-body { display: block; }
+  .group-filter { width: 100%; padding: 5px 8px; margin-bottom: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-size: 12px; outline: none; }
+
+  .items { list-style: none; margin: 0; padding: 0; }
+  .item { display: flex; align-items: center; gap: 4px; border-radius: 6px; }
+  .item:hover { background: var(--chip); }
+  .item-main {
+    flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0;
+    padding: 4px 6px; background: none; border: 0; cursor: pointer; text-align: left;
+  }
+  .box { width: 14px; height: 14px; flex: none; border: 1.5px solid var(--muted); border-radius: 4px; display: grid; place-items: center; font-size: 10px; line-height: 1; }
+  .item.inc .box { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+  .item.inc .box::before { content: "✓"; }
+  .item.exc .box { border-color: var(--exclude); color: var(--exclude); }
+  .item.exc .box::before { content: "✕"; }
+  .item.exc .label { text-decoration: line-through; color: var(--exclude); }
+  .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { margin-left: auto; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .item.zero .item-main { opacity: .35; }
+  .not {
+    visibility: hidden; border: 0; background: none; cursor: pointer; color: var(--muted);
+    font-size: 11px; padding: 2px 6px; border-radius: 4px;
+  }
+  .item:hover .not { visibility: visible; }
+  .not:hover { color: var(--exclude); }
+  .more { margin-top: 4px; border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px 6px; text-decoration: underline; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); gap: 6px; }
+  .swatch {
+    position: relative; aspect-ratio: 1; border-radius: 6px; cursor: pointer;
+    border: 1px solid rgba(128,128,128,.35); padding: 0;
+  }
+  .swatch.inc { outline: 2px solid var(--fg); outline-offset: 2px; }
+  .swatch.exc::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--exclude); font-weight: 700; background: rgba(255,255,255,.6); border-radius: 5px; }
+  .swatch.zero { opacity: .25; }
+
+  .help, .about { margin-top: 20px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+  .about { border-top: 1px solid var(--line); padding-top: 14px; }
+
+  /* Content */
+  main { padding: 20px clamp(16px, 3vw, 36px) 60px; min-width: 0; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .total { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; }
+  .total span { color: var(--muted); font-weight: 400; font-size: 14px; }
+  .toolbar .spacer { flex: 1; }
+  select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  .open-filters { display: none; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); cursor: pointer; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-fg); border: 0; cursor: pointer; font-size: 12px;
+  }
+  .chip small { opacity: .6; }
+  .chip.exc { background: none; color: var(--exclude); border: 1px solid var(--exclude); text-decoration: line-through; }
+  .chip.clear { background: none; color: var(--muted); text-decoration: underline; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px 20px; }
+  .card { min-width: 0; }
+  .thumb {
+    display: block; position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden;
+    background: var(--chip);
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+  .thumb:hover img { transform: scale(1.03); }
+  .score {
+    position: absolute; top: 10px; right: 10px; background: var(--gold); color: #111;
+    font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px;
+  }
+  .card-info { display: flex; gap: 10px; margin-top: 10px; align-items: flex-start; }
+  .card-text { flex: 1; min-width: 0; }
+  .card h2 { margin: 0; font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .card h2 a { text-decoration: none; }
+  .card h2 a:hover { text-decoration: underline; }
+  .meta { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dots { display: flex; gap: 3px; padding-top: 3px; }
+  .dots i { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(128,128,128,.35); }
+  .badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .badges span { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--chip); color: var(--muted); }
+  .badges .gold { background: var(--gold); color: #111; }
+
+  .empty { padding: 60px 0; color: var(--muted); text-align: center; }
+  .sentinel { height: 1px; }
+
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    aside {
+      position: fixed; inset: 0 auto 0 0; width: min(340px, 88vw); z-index: 20;
+      transform: translateX(-100%); transition: transform .25s ease; box-shadow: 0 0 40px rgba(0,0,0,.25);
+    }
+    body.filters-open aside { transform: none; }
+    body.filters-open::after { content: ""; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 10; }
+    .open-filters { display: inline-block; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <h1>SOTD Index</h1>
+      <span class="lang" id="lang"><button data-lang="en">EN</button><button data-lang="fr">FR</button></span>
+    </div>
+    <input class="search" id="q" type="search" autocomplete="off">
+    <div id="groups"></div>
+    <p class="help" id="help"></p>
+    <p class="about" id="about"></p>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <button class="open-filters" id="openFilters"></button>
+      <div class="total" id="total"></div>
+      <div class="spacer"></div>
+      <select id="sort"></select>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden></div>
+    <div class="sentinel" id="sentinel"></div>
+  </main>
+</div>
+
+<script src="data/sotd.js"></script>
+<script>
+(() => {
+  const I18N = {
+    en: {
+      search: 'Search a title, an author, a word…',
+      filters: 'Filters',
+      of: 'of',
+      sotd: 'SOTDs',
+      empty: 'No Site of the Day matches these filters.',
+      noData: 'No data yet: run <code>node scripts/scrape.mjs</code> in this folder.',
+      sort: { new: 'Newest', old: 'Oldest', score: 'Highest score', title: 'Title A→Z' },
+      groups: { award: 'Awards', year: 'Year', cat: 'Category', tag: 'Tag', tech: 'Technology', country: 'Country', font: 'Font', color: 'Color' },
+      and: 'AND', or: 'OR',
+      andTip: 'Sites must have every checked value', orTip: 'Sites must have at least one checked value',
+      filterGroup: (g) => `Filter ${g.toLowerCase()}…`,
+      showAll: (n) => `Show all (${n})`,
+      collapse: 'Show less',
+      exclude: 'Exclude',
+      swatchTip: (n) => `${n} sites (Alt+click to exclude)`,
+      searchChip: 'Search',
+      clearAll: 'Clear all',
+      openSite: 'Open the website',
+      openPage: 'Awwwards page',
+      updated: (d) => `Updated ${d}`,
+      help: 'Click: include. <b>✕</b> on hover: exclude.<br>AND: a site needs every checked value of the group. OR: at least one.<br>Groups combine with AND. Counts show how many sites match if you add that value.',
+      about: (d) => `Unofficial index of every <a href="https://www.awwwards.com/websites/sites_of_the_day/" target="_blank" rel="noopener">Awwwards Site of the Day</a>. Data, scores and thumbnails belong to Awwwards and the sites' authors. ${d ? d + '. ' : ''}<a href="https://github.com/ESirop/awwwards-sotd-index" target="_blank" rel="noopener">Source on GitHub</a>.`,
+    },
+    fr: {
+      search: 'Rechercher un titre, un auteur, un mot…',
+      filters: 'Filtres',
+      of: 'sur',
+      sotd: 'SOTD',
+      empty: 'Aucun SOTD ne correspond à ces filtres.',
+      noData: 'Pas encore de données : lance <code>node scripts/scrape.mjs</code> dans ce dossier.',
+      sort: { new: 'Plus récents', old: 'Plus anciens', score: 'Meilleure note', title: 'Titre A→Z' },
+      groups: { award: 'Distinctions', year: 'Année', cat: 'Catégorie', tag: 'Tag', tech: 'Technologie', country: 'Pays', font: 'Police', color: 'Couleur' },
+      and: 'ET', or: 'OU',
+      andTip: 'Le site doit avoir toutes les valeurs cochées', orTip: 'Le site doit avoir au moins une valeur cochée',
+      filterGroup: (g) => `Filtrer ${g.toLowerCase()}…`,
+      showAll: (n) => `Tout afficher (${n})`,
+      collapse: 'Réduire',
+      exclude: 'Exclure',
+      swatchTip: (n) => `${n} sites (Alt+clic pour exclure)`,
+      searchChip: 'Recherche',
+      clearAll: 'Tout effacer',
+      openSite: 'Ouvrir le site',
+      openPage: 'Fiche Awwwards',
+      updated: (d) => `Mis à jour le ${d}`,
+      help: 'Clic : inclure. <b>✕</b> au survol : exclure.<br>ET : le site doit avoir toutes les valeurs cochées du groupe. OU : au moins une.<br>Les groupes se combinent en ET. Les chiffres indiquent combien de sites correspondent si on ajoute la valeur.',
+      about: (d) => `Index non officiel de tous les <a href="https://www.awwwards.com/websites/sites_of_the_day/" target="_blank" rel="noopener">Sites of the Day d'Awwwards</a>. Données, notes et vignettes appartiennent à Awwwards et aux auteurs des sites. ${d ? d + '. ' : ''}<a href="https://github.com/ESirop/awwwards-sotd-index" target="_blank" rel="noopener">Code source sur GitHub</a>.`,
+    },
+  };
+
+  const PAGE = 60;
+  const SHOW = 10;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  const params = new URLSearchParams(location.hash.slice(1));
+  let lang = params.get('lang') || store.get('sotd-lang') || (navigator.language || 'en').slice(0, 2);
+  if (!I18N[lang]) lang = 'en';
+  let T = I18N[lang];
+  const locale = () => (lang === 'fr' ? 'fr-FR' : 'en-US');
+  const fmtDate = (d) => d ? new Date(d + 'T00:00:00').toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  const fmtNum = (n) => n.toLocaleString(locale());
+
+  const data = window.SOTD;
+  if (!data) {
+    $('grid').innerHTML = `<p class="empty">${T.noData}</p>`;
+    return;
+  }
+
+  const groups = data.groups.filter((g) => g.items.length);
+  const labelOf = new Map(groups.flatMap((g) => g.items.map((it) => [it.id, it.label])));
+  const groupOf = (id) => id.slice(0, id.indexOf(':'));
+  const groupName = (key) => T.groups[key] ?? key;
+  for (const g of groups) {
+    if (g.key === 'year') g.items.sort((a, b) => b.label.localeCompare(a.label));
+  }
+
+  const sites = data.sites.map((s) => ({
+    ...s,
+    set: new Set(s.f),
+    hay: [s.t, s.a, s.desc, s.u].join(' ').toLowerCase(),
+  }));
+
+  // State: included and excluded values, mode per group, search, sort, open groups.
+  const st = {
+    inc: new Set(),
+    exc: new Set(),
+    mode: {},
+    q: '',
+    sort: 'new',
+    open: new Set(['cat', 'tag']),
+    expanded: new Set(),
+    filterText: {},
+  };
+
+  // The state lives in the URL hash, so a search can be bookmarked or shared.
+  function readHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    st.inc = new Set(p.getAll('f'));
+    st.exc = new Set(p.getAll('x'));
+    st.q = p.get('q') ?? '';
+    st.sort = p.get('sort') ?? 'new';
+    for (const g of groups) st.mode[g.key] = g.mode;
+    for (const m of p.getAll('m')) {
+      const [k, v] = m.split(':');
+      if (k in st.mode) st.mode[k] = v === 'or' ? 'or' : 'and';
+    }
+    for (const id of st.inc) st.open.add(groupOf(id));
+  }
+  function writeHash() {
+    const p = new URLSearchParams();
+    st.inc.forEach((v) => p.append('f', v));
+    st.exc.forEach((v) => p.append('x', v));
+    if (st.q) p.set('q', st.q);
+    if (st.sort !== 'new') p.set('sort', st.sort);
+    for (const g of groups) if (st.mode[g.key] !== g.mode) p.append('m', `${g.key}:${st.mode[g.key]}`);
+    if (new URLSearchParams(location.hash.slice(1)).has('lang')) p.set('lang', lang);
+    const h = p.toString();
+    history.replaceState(null, '', h ? '#' + h : location.pathname + location.search);
+  }
+
+  // Does a site pass the filters, optionally ignoring the inclusions of one group?
+  function matches(site, skipGroup) {
+    if (st.q) {
+      for (const w of st.q.toLowerCase().split(/\s+/)) if (w && !site.hay.includes(w)) return false;
+    }
+    for (const id of st.exc) if (site.set.has(id)) return false;
+    for (const g of groups) {
+      if (g.key === skipGroup) continue;
+      const sel = g.items.filter((it) => st.inc.has(it.id));
+      if (!sel.length) continue;
+      if (st.mode[g.key] === 'or') {
+        if (!sel.some((it) => site.set.has(it.id))) return false;
+      } else if (!sel.every((it) => site.set.has(it.id))) return false;
+    }
+    return true;
+  }
+
+  let results = [];
+  let shown = 0;
+
+  function compute() {
+    results = sites.filter((s) => matches(s));
+    const by = {
+      new: (a, b) => (b.d ?? '').localeCompare(a.d ?? ''),
+      old: (a, b) => (a.d ?? '9').localeCompare(b.d ?? '9'),
+      score: (a, b) => (b.sc ?? -1) - (a.sc ?? -1) || (b.d ?? '').localeCompare(a.d ?? ''),
+      title: (a, b) => a.t.localeCompare(b.t, locale(), { sensitivity: 'base' }),
+    }[st.sort] ?? ((a, b) => (b.d ?? '').localeCompare(a.d ?? ''));
+    results.sort(by);
+  }
+
+  // How many sites you would get by adding each value.
+  // AND: counted on current results. OR: counted without the group's own choices.
+  function counts(g) {
+    const base = st.mode[g.key] === 'or' ? sites.filter((s) => matches(s, g.key)) : results;
+    const c = new Map();
+    for (const s of base) for (const id of s.f) if (id.startsWith(g.key + ':')) c.set(id, (c.get(id) ?? 0) + 1);
+    return c;
+  }
+
+  function renderGroups() {
+    const html = [];
+    for (const g of groups) {
+      const c = counts(g);
+      const name = groupName(g.key);
+      const selected = g.items.filter((it) => st.inc.has(it.id) || st.exc.has(it.id)).length;
+      const open = st.open.has(g.key);
+      let body = '';
+      if (open) {
+        const ft = (st.filterText[g.key] ?? '').toLowerCase();
+        let items = g.items.filter((it) => !ft || it.label.toLowerCase().includes(ft));
+        if (g.key !== 'year' && g.key !== 'color') items = [...items].sort((a, b) => (c.get(b.id) ?? 0) - (c.get(a.id) ?? 0) || a.label.localeCompare(b.label));
+        const picked = (it) => st.inc.has(it.id) || st.exc.has(it.id);
+        const visible = st.expanded.has(g.key) || ft || g.key === 'color'
+          ? items
+          : items.filter((it, i) => i < SHOW || picked(it));
+        const cls = (it) => [st.inc.has(it.id) && 'inc', st.exc.has(it.id) && 'exc', !c.get(it.id) && !picked(it) && 'zero'].filter(Boolean).join(' ');
+        if (g.key === 'color') {
+          body = `<div class="swatches">${visible.map((it) => `
+            <button class="swatch ${cls(it)}" style="background:${esc(it.label)}" data-id="${esc(it.id)}"
+              title="${esc(it.label)} · ${esc(T.swatchTip(c.get(it.id) ?? 0))}"></button>`).join('')}</div>`;
+        } else {
+          body = (g.items.length > 15 ? `<input class="group-filter" data-g="${g.key}" placeholder="${esc(T.filterGroup(name))}" value="${esc(st.filterText[g.key] ?? '')}">` : '') +
+            `<ul class="items">${visible.map((it) => `
+              <li class="item ${cls(it)}">
+                <button class="item-main" data-id="${esc(it.id)}"><span class="box"></span><span class="label">${esc(it.label)}</span><span class="count">${c.get(it.id) ?? 0}</span></button>
+                <button class="not" data-not="${esc(it.id)}" title="${esc(T.exclude)}">✕</button>
+              </li>`).join('')}</ul>` +
+            (!ft && items.length > SHOW
+              ? `<button class="more" data-more="${g.key}">${st.expanded.has(g.key) ? T.collapse : T.showAll(items.length)}</button>`
+              : '');
+        }
+      }
+      html.push(`
+        <section class="group ${open ? 'open' : ''}">
+          <div class="group-head">
+            <button class="group-title" data-toggle="${g.key}">${esc(name)}${selected ? ` <span class="n">${selected}</span>` : ''}</button>
+            <span class="mode">
+              <button class="${st.mode[g.key] === 'and' ? 'on' : ''}" data-mode="${g.key}:and" title="${esc(T.andTip)}">${T.and}</button>
+              <button class="${st.mode[g.key] === 'or' ? 'on' : ''}" data-mode="${g.key}:or" title="${esc(T.orTip)}">${T.or}</button>
+            </span>
+          </div>
+          <div class="group-body">${body}</div>
+        </section>`);
+    }
+    const focused = document.activeElement?.dataset?.g;
+    const caret = document.activeElement?.selectionStart;
+    $('groups').innerHTML = html.join('');
+    if (focused) {
+      const el = $('groups').querySelector(`.group-filter[data-g="${focused}"]`);
+      if (el) { el.focus(); el.setSelectionRange(caret, caret); }
+    }
+  }
+
+  function renderChips() {
+    const chip = (id, exc) => {
+      const key = groupOf(id);
+      return `<button class="chip ${exc ? 'exc' : ''}" data-chip="${esc(id)}">
+        ${key === 'color' ? `<i style="width:10px;height:10px;border-radius:50%;background:${esc(labelOf.get(id))}"></i>` : ''}
+        <small>${esc(groupName(key))}</small> ${esc(labelOf.get(id) ?? id)} ✕</button>`;
+    };
+    const parts = [...[...st.inc].map((id) => chip(id, false)), ...[...st.exc].map((id) => chip(id, true))];
+    if (st.q) parts.push(`<button class="chip" data-chip="q"><small>${T.searchChip}</small> ${esc(st.q)} ✕</button>`);
+    if (parts.length > 1) parts.push(`<button class="chip clear" data-chip="all">${T.clearAll}</button>`);
+    $('chips').innerHTML = parts.join('');
+  }
+
+  function cardHtml(s) {
+    const awards = s.f.filter((id) => id.startsWith('award:')).map((id) => `<span class="${/month|year/.test(id) ? 'gold' : ''}">${esc(labelOf.get(id))}</span>`).join('');
+    const country = s.f.filter((id) => id.startsWith('country:')).map((id) => labelOf.get(id)).join(', ');
+    return `<article class="card">
+      <a class="thumb" href="${esc(s.u || `https://www.awwwards.com/sites/${s.s}`)}" target="_blank" rel="noopener" title="${esc(s.desc || T.openSite)}">
+        ${s.i ? `<img loading="lazy" src="${esc(s.i)}" alt="">` : ''}
+        ${s.sc ? `<span class="score">${s.sc.toFixed(2)}</span>` : ''}
+      </a>
+      <div class="card-info">
+        <div class="card-text">
+          <h2><a href="https://www.awwwards.com/sites/${esc(s.s)}" target="_blank" rel="noopener" title="${esc(T.openPage)}">${esc(s.t)}</a></h2>
+          <div class="meta">${esc(fmtDate(s.d))}${s.a ? ' · ' + esc(s.a) : ''}${country ? ' · ' + esc(country) : ''}</div>
+        </div>
+        ${s.c?.length ? `<div class="dots">${s.c.slice(0, 5).map((h) => `<i style="background:${esc(h)}"></i>`).join('')}</div>` : ''}
+      </div>
+      ${awards ? `<div class="badges">${awards}</div>` : ''}
+    </article>`;
+  }
+
+  function renderMore() {
+    const next = results.slice(shown, shown + PAGE);
+    $('grid').insertAdjacentHTML('beforeend', next.map(cardHtml).join(''));
+    shown += next.length;
+  }
+
+  function render() {
+    compute();
+    $('total').innerHTML = `${fmtNum(results.length)} <span>${T.of} ${fmtNum(sites.length)} ${T.sotd}</span>`;
+    $('grid').innerHTML = '';
+    $('empty').hidden = results.length > 0;
+    shown = 0;
+    renderMore();
+    renderGroups();
+    renderChips();
+    writeHash();
+  }
+
+  // Static texts, refreshed when the language changes.
+  function renderStatic() {
+    document.documentElement.lang = lang;
+    T = I18N[lang];
+    $('q').placeholder = T.search;
+    $('openFilters').textContent = T.filters;
+    $('empty').textContent = T.empty;
+    $('help').innerHTML = T.help;
+    $('about').innerHTML = T.about(data.updated ? T.updated(fmtDate(data.updated.slice(0, 10))) : '');
+    $('sort').innerHTML = Object.entries(T.sort).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+    $('sort').value = st.sort;
+    $('sort').setAttribute('aria-label', 'Sort');
+    for (const b of $('lang').querySelectorAll('button')) b.classList.toggle('on', b.dataset.lang === lang);
+  }
+
+  // Interactions
+  const toggle = (id, exclude) => {
+    const [on, off] = exclude ? [st.exc, st.inc] : [st.inc, st.exc];
+    off.delete(id);
+    on.has(id) ? on.delete(id) : on.add(id);
+    render();
+  };
+
+  $('groups').addEventListener('click', (e) => {
+    const t = e.target.closest('button');
+    if (!t) return;
+    if (t.dataset.toggle) {
+      const k = t.dataset.toggle;
+      st.open.has(k) ? st.open.delete(k) : st.open.add(k);
+      renderGroups();
+    } else if (t.dataset.mode) {
+      const [k, v] = t.dataset.mode.split(':');
+      st.mode[k] = v;
+      st.open.add(k);
+      render();
+    } else if (t.dataset.more) {
+      const k = t.dataset.more;
+      st.expanded.has(k) ? st.expanded.delete(k) : st.expanded.add(k);
+      renderGroups();
+    } else if (t.dataset.not) {
+      toggle(t.dataset.not, true);
+    } else if (t.dataset.id) {
+      toggle(t.dataset.id, e.altKey);
+    }
+  });
+  $('groups').addEventListener('input', (e) => {
+    if (!e.target.dataset.g) return;
+    st.filterText[e.target.dataset.g] = e.target.value;
+    renderGroups();
+  });
+  $('chips').addEventListener('click', (e) => {
+    const id = e.target.closest('[data-chip]')?.dataset.chip;
+    if (!id) return;
+    if (id === 'all') { st.inc.clear(); st.exc.clear(); st.q = ''; $('q').value = ''; }
+    else if (id === 'q') { st.q = ''; $('q').value = ''; }
+    else { st.inc.delete(id); st.exc.delete(id); }
+    render();
+  });
+  $('lang').addEventListener('click', (e) => {
+    const l = e.target.closest('[data-lang]')?.dataset.lang;
+    if (!l || l === lang) return;
+    lang = l;
+    store.set('sotd-lang', l);
+    renderStatic();
+    render();
+  });
+  let qTimer;
+  $('q').addEventListener('input', (e) => {
+    clearTimeout(qTimer);
+    qTimer = setTimeout(() => { st.q = e.target.value.trim(); render(); }, 150);
+  });
+  $('sort').addEventListener('change', (e) => { st.sort = e.target.value; render(); });
+  $('openFilters').addEventListener('click', () => document.body.classList.add('filters-open'));
+  document.addEventListener('click', (e) => {
+    if (document.body.classList.contains('filters-open') && !e.target.closest('aside') && !e.target.closest('#openFilters')) {
+      document.body.classList.remove('filters-open');
+    }
+  });
+  window.addEventListener('hashchange', () => { readHash(); $('q').value = st.q; $('sort').value = st.sort; render(); });
+
+  new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && shown < results.length) renderMore();
+  }, { rootMargin: '1200px' }).observe($('sentinel'));
+
+  readHash();
+  renderStatic();
+  $('q').value = st.q;
+  render();
+})();
+</script>
+</body>
+</html>

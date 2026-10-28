@@ -1,0 +1,16 @@
+{
+  "name": "awwwards-sotd-index",
+  "version": "1.0.0",
+  "description": "Every Awwwards Site of the Day, with filters you can actually combine.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "scrape": "node scripts/scrape.mjs",
+    "build": "node scripts/scrape.mjs --build",
+    "search": "node scripts/search.mjs"
+  }
+}
