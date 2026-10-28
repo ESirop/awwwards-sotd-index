@@ -11,7 +11,7 @@ and puts them in a single page where they can be crossed freely: *Music & Sound 
 
 ## Features
 
-- About 6,300 Sites of the Day, from June 2009 to today, updated every day.
+- About 6,300 Sites of the Day, from June 2009 to today.
 - Filters: awards (Site of the Month, Site of the Year, Developer Award, Honors), year, category, tag,
   technology, country, font and color.
 - **AND / OR** per group, and **exclusion** of any value (✕ on hover).
@@ -59,11 +59,16 @@ node scripts/search.mjs music-sound 3d --award sotd,sotm
 node scripts/search.mjs --list
 ```
 
-## Automatic updates
+## Updating the live page
 
-A [GitHub Actions workflow](.github/workflows/update.yml) runs every day at 11:00 Paris time, once Awwwards has
-published its new Site of the Day: it fetches what is new,
-commits `data/`, then deploys the page to GitHub Pages. On the 1st of each month it walks every listing again.
+Awwwards blocks requests coming from GitHub's servers, so the data is refreshed from a regular computer:
+
+```bash
+npm run update            # fetch what is new (a few minutes), commit and push data/
+npm run update -- --full  # walk every listing again (about an hour)
+```
+
+Every push to `main` redeploys the page through a [GitHub Actions workflow](.github/workflows/deploy.yml).
 
 ## Disclaimer
 
@@ -82,4 +87,5 @@ Awwwards ne permet pas de croiser ses filtres. Ce projet récupère tous les Sit
 catégories, tags, technos, pays, polices, couleurs, notes et distinctions, et les rend combinables
 dans une seule page, en français ou en anglais : **[esirop.github.io/awwwards-sotd-index](https://esirop.github.io/awwwards-sotd-index/)**.
 
-En local : ouvrir `index.html`. Pour mettre les données à jour : `node scripts/scrape.mjs`.
+En local : ouvrir `index.html`. Pour mettre à jour la page en ligne : `npm run update`
+(récupère les nouveautés, puis commit et push de `data/` ; la page se redéploie toute seule).

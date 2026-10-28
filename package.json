@@ -9,6 +9,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "update": "node scripts/update.mjs",
     "scrape": "node scripts/scrape.mjs",
     "build": "node scripts/scrape.mjs --build",
     "search": "node scripts/search.mjs"
