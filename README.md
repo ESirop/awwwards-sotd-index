@@ -61,7 +61,8 @@ node scripts/search.mjs --list
 
 ## Automatic updates
 
-A [GitHub Actions workflow](.github/workflows/update.yml) runs every day: it fetches the new Sites of the Day,
+A [GitHub Actions workflow](.github/workflows/update.yml) runs every day at 11:00 Paris time, once Awwwards has
+published its new Site of the Day: it fetches what is new,
 commits `data/`, then deploys the page to GitHub Pages. On the 1st of each month it walks every listing again.
 
 ## Disclaimer
